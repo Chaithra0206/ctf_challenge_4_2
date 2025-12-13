@@ -18,14 +18,13 @@ export const ClockFace: React.FC = () => {
 
   return (
     <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-full border-[8px] md:border-[12px] border-bronze bg-[#1a1a1a] shadow-[0_0_60px_rgba(205,127,50,0.4),inset_0_0_40px_rgba(0,0,0,0.9)] flex items-center justify-center z-20 group">
-      
+   
       <div className="absolute inset-0 rounded-full opacity-40 bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')]"></div>
-      
     
       <div className="absolute inset-0 rounded-full border border-white/10 shadow-inner"></div>
 
-     
       <div className="absolute inset-4 rounded-full border border-dashed border-white/5"></div>
+      
       {[...Array(60)].map((_, i) => {
         const isHour = i % 5 === 0;
         return (
@@ -60,13 +59,12 @@ export const ClockFace: React.FC = () => {
         </div>
       ))}
 
-      
       <div className="absolute top-2/3 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center opacity-60">
         <span className="font-mono text-[8px] md:text-[10px] tracking-[0.4em] text-copper block font-bold">AETHER</span>
         <span className="font-mono text-[8px] md:text-[10px] tracking-[0.2em] text-bronze block">CHRONOMETRY</span>
       </div>
 
-   
+    
       <div className="absolute inset-0 z-30 filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
          
           <div 
@@ -78,15 +76,17 @@ export const ClockFace: React.FC = () => {
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-1.5 h-6 bg-brass rounded-b-full"></div>
           </div>
 
+          
           <div 
             className="absolute top-0 left-0 w-full h-full"
             style={{ transform: `rotate(${minDeg}deg)` }}
           >
             <div className="absolute bottom-1/2 left-1/2 -translate-x-1/2 w-1 md:w-1.5 h-24 md:h-32 bg-gradient-to-t from-copper via-orange-400 to-orange-200 rounded-full origin-bottom"></div>
-            
+         
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-1 h-8 bg-copper rounded-b-full"></div>
           </div>
 
+         
           <div 
             className="absolute top-0 left-0 w-full h-full"
             style={{ transform: `rotate(${secDeg}deg)` }}
@@ -97,7 +97,7 @@ export const ClockFace: React.FC = () => {
           </div>
       </div>
       
-  
+     
       <div className="absolute w-4 h-4 md:w-6 md:h-6 bg-gradient-to-br from-yellow-200 to-yellow-700 rounded-full z-50 shadow-[0_2px_4px_black] border border-black/20"></div>
 
       

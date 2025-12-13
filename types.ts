@@ -1,5 +1,5 @@
 export interface GearProps {
-  char: string;
+  value: number;
   index: number;
   size: number;
   top: string;

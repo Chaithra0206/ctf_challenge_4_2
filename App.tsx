@@ -1,65 +1,102 @@
-import React from 'react';
-import { Gear } from './components/Gear';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ClockFace } from './components/ClockFace';
+import { Gear } from './components/Gear';
 import { GearProps } from './types';
 
-const XOR_MASK = 91;
+const MECHANICAL_SEQUENCE = [83, 55, 109, 64, 57, 50, 81, 107, 45, 80, 116, 33, 88, 102];
 
-const KEY_DATA = [
-  8, 108, 54, 7, 110, 104, 10, 48, 118, 11, 55, 122, 3, 61
-];
+const App: React.FC = () => {
+  const [viewportSize, setViewportSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
-const KEY_CHARS = KEY_DATA.map(n =>
-  String.fromCharCode(n ^ XOR_MASK)
-);
+  useEffect(() => {
+    const handleResize = () => setViewportSize({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-const GEAR_CONFIGS: Omit<GearProps, 'char' | 'index'>[] = [
-  { size: 120, top: '10%', left: '10%', teeth: 12, color: 'bronze', direction: 'normal', zIndex: 10 },
-  { size: 80, top: '25%', left: '5%', teeth: 8, color: 'brass', direction: 'reverse', zIndex: 5 },
-  { size: 150, top: '-5%', left: '70%', teeth: 16, color: 'copper', direction: 'normal', zIndex: 1 },
-  { size: 90, top: '15%', left: '85%', teeth: 10, color: 'bronze', direction: 'reverse', zIndex: 8 },
-  { size: 200, top: '60%', left: '-5%', teeth: 24, color: 'brass', direction: 'normal', zIndex: 2 },
-  { size: 100, top: '80%', left: '15%', teeth: 12, color: 'copper', direction: 'reverse', zIndex: 6 },
-  { size: 130, top: '75%', left: '80%', teeth: 14, color: 'bronze', direction: 'normal', zIndex: 4 },
-  { size: 70, top: '60%', left: '90%', teeth: 8, color: 'brass', direction: 'reverse', zIndex: 9 },
-  { size: 60, top: '40%', left: '2%', teeth: 6, color: 'copper', direction: 'normal', zIndex: 7 },
-  { size: 110, top: '5%', left: '40%', teeth: 12, color: 'bronze', direction: 'reverse', zIndex: 0 },
-  { size: 180, top: '85%', left: '50%', teeth: 20, color: 'brass', direction: 'normal', zIndex: 3 },
-  { size: 85, top: '35%', left: '90%', teeth: 9, color: 'copper', direction: 'reverse', zIndex: 8 },
-  { size: 95, top: '50%', left: '8%', teeth: 10, color: 'bronze', direction: 'normal', zIndex: 5 },
-  { size: 140, top: '10%', left: '60%', teeth: 15, color: 'brass', direction: 'reverse', zIndex: 2 },
-];
-
-export default function App() {
-  return (
-    <div className="min-h-screen w-full overflow-hidden relative flex flex-col items-center justify-center p-4 bg-[#0a0a0a]">
-
-      
-      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none opacity-80 blur-[1px] md:blur-0">
-        {KEY_CHARS.map((char, index) => {
-          const config = GEAR_CONFIGS[index % GEAR_CONFIGS.length];
-          return (
-            <Gear
-              key={index}
-              char={char}
-              index={index}
-              {...config}
-            />
-          );
-        })}
-      </div>
-
+  const gears: GearProps[] = useMemo(() => {
+    const radius = Math.min(viewportSize.width, viewportSize.height) * 0.35; 
+    const cx = 0;
+    const cy = 0;
+    
+    return MECHANICAL_SEQUENCE.map((val, i) => {
+      const angle = (i / MECHANICAL_SEQUENCE.length) * 2 * Math.PI - Math.PI / 2;
      
-      <div className="relative z-50 flex flex-col items-center max-w-2xl mx-auto">
-        <h1 className="text-6xl font-steampunk text-brass mb-4">
-          Clockwork Cipher
-        </h1>
-        <p className="font-mono text-sm text-brass/70 tracking-widest">
-          “THE GEARS NEVER LIE”
-        </p>
-        <ClockFace />
+      const r = radius + (i % 2 === 0 ? 25 : -15);
+      
+      const left = `calc(50% + ${cx + r * Math.cos(angle)}px)`;
+      const top = `calc(50% + ${cy + r * Math.sin(angle)}px)`;
+      
+      const size = 50 + (val % 50); 
+      const teeth = 8 + (val % 10);
+      
+      return {
+        value: val,
+        index: i,
+        size,
+        top,
+        left,
+        teeth,
+        color: i % 3 === 0 ? 'bronze' : i % 3 === 1 ? 'brass' : 'copper',
+        direction: i % 2 === 0 ? 'normal' : 'reverse',
+        zIndex: 10
+      };
+    });
+  }, [viewportSize]);
+
+  return (
+    <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden bg-[#0f0f0f]">
+      
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.85)_100%)] z-10"></div>
+      
+     
+      <div className="absolute top-0 left-0 w-full h-48 border-b-[6px] border-bronze/20 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] transform -skew-y-2 origin-top-left"></div>
+      <div className="absolute bottom-0 right-0 w-full h-48 border-t-[6px] border-copper/20 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] transform skew-y-2 origin-bottom-right"></div>
+      
+      
+      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-500/20 rounded-full blur-[1px] animate-pulse"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-3 h-3 bg-bronze/20 rounded-full blur-[2px] animate-pulse delay-700"></div>
+      <div className="absolute top-1/2 right-10 w-1 h-1 bg-white/10 rounded-full blur-[1px] animate-pulse delay-300"></div>
+
+      <div className="relative z-20 flex flex-col items-center">
+     
+        <div className="relative w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] flex items-center justify-center mb-12">
+            
+           
+            <div className="z-30 relative transition-all duration-1000 hover:scale-[1.02]">
+              <ClockFace />
+            </div>
+
+           
+            {gears.map((gear, i) => (
+              <div 
+                key={i} 
+                className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ease-in-out"
+                style={{ 
+                  top: gear.top, 
+                  left: gear.left,
+                  transform: `scale(1) translate(-50%, -50%)`
+                }}
+              >
+                <Gear {...gear} />
+              </div>
+            ))}
+        </div>
+
+        <div className="text-center z-50">
+            <h2 className="text-brass font-steampunk text-3xl tracking-widest drop-shadow-lg opacity-90">
+                AETHER CHRONOMETRY
+            </h2>
+            <div className="h-0.5 w-32 mx-auto bg-gradient-to-r from-transparent via-bronze to-transparent my-3 opacity-50"></div>
+            <p className="text-copper/60 font-mono text-xs italic tracking-widest">
+                "THE GEARS WHISPER THE TRUTH"
+            </p>
+        </div>
       </div>
 
+    
     </div>
   );
-}
+};
+
+export default App;
